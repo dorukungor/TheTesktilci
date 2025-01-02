@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gif Gösterisi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            animation: disco 1s infinite;
+        }
+
+        @keyframes disco {
+            0% { background-color: #ff0000; }
+            10% { background-color: #ff00ff; }
+            20% { background-color: #0000ff; }
+            30% { background-color: #00ff00; }
+            40% { background-color: #ffff00; }
+            50% { background-color: #00ffff; }
+            60% { background-color: #ff00aa; }
+            70% { background-color: #aa00ff; }
+            80% { background-color: #ff7700; }
+            90% { background-color: #00ff77; }
+            100% { background-color: #ff0000; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .gif-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        #currentGif {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        #textOverlay {
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        #nextButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid white;
+            border-radius: 10px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+
+        #nextButton:hover {
+            background-color: white;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        #nextButton.escape {
+            position: fixed;
+            transition: all 0.2s ease;
+        }
+
+        #nextButton.normal {
+            position: relative;
+            left: auto !important;
+            top: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="gif-container">
+            <img id="currentGif" src="gifs/shrek.gif" alt="Gif">
+            <div id="textOverlay"></div>
+            <button id="nextButton" onclick="nextGif()">Sonraki Gif</button>
+        </div>
+    </div>
+
+    <script>
+        const gifs = [
+            'gifs/shrek.gif',
+            'gifs/tenor.gif',
+            'gifs/hergecekaan.gif',
+            'gifs/EouK.gif',
+            'gifs/kaankovalıyo.gif',
+            'gifs/enesbatur.gif'
+        ];
+
+        const texts = [
+            'En sevdiğim arkadaşım KAAN için özel hazırlanmıştır.',
+            'PC başında otururken en sevdiğim arkadaşım KAAN',
+            'Her gece mikrofon başında yakışıklım KAAN',
+            '2 Ay sonra Okyanus with BIG KAAN',
+            'OBEZ KAAN SENİ YEMEYE GELİYO KAÇ',
+            'YAKALANDIN AWWW ŞAP ŞUP YENDİN :(((((('
+        ];
+
+        let currentIndex = 0;
+        let escapeTimeout;
+        let isEscapeActive = true;
+        const button = document.getElementById('nextButton');
+
+        function updateButtonPosition() {
+            const maxX = window.innerWidth - button.offsetWidth;
+            const maxY = window.innerHeight - button.offsetHeight;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            button.style.left = randomX + 'px';
+            button.style.top = randomY + 'px';
+        }
+
+        button.addEventListener('mouseenter', function() {
+            if (currentIndex === 4 && isEscapeActive) { // kaankovalıyo.gif indeksi ve kaçma aktifse
+                button.classList.remove('normal');
+                button.classList.add('escape');
+                clearInterval(escapeTimeout);
+                escapeTimeout = setInterval(updateButtonPosition, 50);
+                
+                setTimeout(() => {
+                    clearInterval(escapeTimeout);
+                    button.classList.remove('escape');
+                    button.classList.add('normal');
+                    isEscapeActive = false; // 3 saniye sonra kaçma özelliğini deaktif et
+                    document.getElementById('textOverlay').textContent = 'OBEZ KAAN ÇOK YORULDU'; // Yazıyı değiştir
+                }, 5000);
+            }
+        });
+
+        function nextGif() {
+            currentIndex = (currentIndex + 1) % gifs.length;
+            document.getElementById('currentGif').src = gifs[currentIndex];
+            
+            // Buton yazısını güncelle ve kaçma özelliğini sıfırla
+            if (currentIndex === 4) {
+                button.textContent = 'KAÇ!!!';
+                isEscapeActive = true; // Yeni gif'e geçtiğimizde kaçma özelliğini tekrar aktif et
+                document.getElementById('textOverlay').textContent = texts[currentIndex]; // OBEZ KAAN yazısı
+            } else {
+                button.textContent = 'Sonraki Gif';
+                document.getElementById('textOverlay').textContent = texts[currentIndex];
+            }
+        }
+
+        // Sayfa yüklendiğinde ilk yazıyı göster
+        window.onload = function() {
+            document.getElementById('textOverlay').textContent = texts[0];
+        }
+    </script>
+</body>
+</html> 
